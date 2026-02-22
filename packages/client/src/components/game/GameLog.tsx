@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import type { MoveLogEntry } from '@scrabble/common';
 
 interface Props {
@@ -8,12 +8,6 @@ interface Props {
 }
 
 export function GameLog({ entries, playerID, playerName }: Props) {
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [entries.length]);
-
   if (entries.length === 0) {
     return (
       <div className="game-log">
@@ -27,7 +21,7 @@ export function GameLog({ entries, playerID, playerName }: Props) {
     <div className="game-log">
       <h3>Move History</h3>
       <ul className="log-list">
-        {entries.map((entry, i) => {
+        {[...entries].reverse().map((entry, i) => {
           const isMe = entry.playerID === playerID;
           const name = `${playerName(entry.playerID)}${isMe ? ' (You)' : ''}`;
 
@@ -48,7 +42,6 @@ export function GameLog({ entries, playerID, playerName }: Props) {
           );
         })}
       </ul>
-      <div ref={bottomRef} />
     </div>
   );
 }
