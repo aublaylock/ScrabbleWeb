@@ -1,0 +1,197 @@
+/* ── Board ─────────────────────────────────────────────────── */
+.board {
+  display: grid;
+  grid-template-columns: repeat(15, 1fr);
+  gap: 2px;
+  background: #4a3728;
+  padding: 4px;
+  border-radius: 6px;
+  border: 3px solid #3a2a1a;
+  box-shadow: 0 6px 24px rgba(0,0,0,.6);
+  /* Responsive: fill available width up to a comfortable size */
+  width: min(calc(100vw - 260px), 600px);
+  aspect-ratio: 1;
+}
+
+.cell {
+  background: #c8b59a;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  position: relative;
+  aspect-ratio: 1;
+  min-width: 0;
+  transition: background .1s;
+}
+
+.cell-target {
+  cursor: crosshair;
+}
+.cell-target:hover {
+  background: #ddd0b8;
+}
+
+/* Drag-over highlight */
+.cell-drag-over {
+  background: #e8d8a0 !important;
+  box-shadow: inset 0 0 0 2px #c8a820;
+}
+
+/* Pending tile is draggable */
+.tile-draggable {
+  cursor: grab;
+}
+.tile-draggable:active {
+  cursor: grabbing;
+}
+
+.cell-filled { cursor: default; }
+.cell-pending { cursor: pointer; }
+
+/* Premium square colours */
+.cell-tw   { background: #c0392b; }
+.cell-dw   { background: #e8a4a4; }
+.cell-tl   { background: #2471a3; }
+.cell-dl   { background: #85c1e9; }
+.cell-star { background: #e8a4a4; }
+
+.cell-label {
+  font-size: clamp(6px, 1.2vw, 10px);
+  font-weight: 700;
+  color: rgba(255,255,255,.85);
+  text-align: center;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ── Tiles ─────────────────────────────────────────────────── */
+.tile {
+  width: 90%;
+  height: 90%;
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  pointer-events: none;
+}
+
+.tile-committed {
+  background: #f5e6c8;
+  border: 1px solid #c8a96e;
+  box-shadow: 1px 1px 0 #a07840, inset 0 1px 0 rgba(255,255,255,.5);
+}
+
+.tile-pending {
+  background: #fff3d0;
+  border: 2px solid #e8c44a;
+  box-shadow: 1px 1px 0 #b09020, inset 0 1px 0 rgba(255,255,255,.6);
+}
+
+.tile-committed.tile-blank {
+  background: #c4d8ff;
+  border-color: #5a85d0;
+  box-shadow: 1px 1px 0 #3a60a0, inset 0 1px 0 rgba(255,255,255,.6);
+}
+
+.tile-pending.tile-blank {
+  background: #b0cbff;
+  border-color: #4070cc;
+  box-shadow: 1px 1px 0 #2050a0, inset 0 1px 0 rgba(255,255,255,.7);
+}
+
+.tile-letter {
+  font-size: clamp(8px, 1.8vw, 16px);
+  font-weight: 900;
+  color: #2c1a00;
+  line-height: 1;
+}
+
+.tile-value {
+  font-size: clamp(5px, 0.9vw, 8px);
+  font-weight: 600;
+  color: #6b4c1a;
+  position: absolute;
+  bottom: 1px;
+  right: 2px;
+  line-height: 1;
+}
+
+/* ── Rack ──────────────────────────────────────────────────── */
+.rack {
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px;
+  background: #4a3728;
+  border-radius: 8px;
+  border: 2px solid #3a2a1a;
+  min-height: 56px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.rack-tile {
+  width: 48px;
+  height: 52px;
+  border-radius: 4px;
+  background: #f5e6c8;
+  border: 2px solid #c8a96e;
+  box-shadow: 2px 2px 0 #a07840, inset 0 1px 0 rgba(255,255,255,.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform .1s, box-shadow .1s;
+}
+.rack-tile:hover:not(:disabled) {
+  transform: translateY(-4px);
+  box-shadow: 2px 6px 0 #a07840;
+}
+.rack-tile:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.rack-tile-selected {
+  border-color: #e94560;
+  box-shadow: 2px 2px 0 #b03040, 0 0 0 2px rgba(233,69,96,.4);
+  transform: translateY(-4px);
+}
+
+.rack-tile-exchange {
+  border-color: #f39c12;
+  box-shadow: 2px 2px 0 #b07010, 0 0 0 2px rgba(243,156,18,.4);
+}
+
+.rack-tile-placed {
+  opacity: 0.35;
+}
+
+/* Rack highlighted as drop target (dragging a board tile back) */
+.rack-drag-over {
+  border-color: #c8a820;
+  box-shadow: 0 0 0 2px rgba(200,168,32,.5);
+  background: #5a4530;
+}
+
+.rack-tile .tile-letter {
+  font-size: 18px;
+  font-weight: 900;
+  color: #2c1a00;
+  line-height: 1;
+}
+
+.rack-tile .tile-value {
+  font-size: 9px;
+  font-weight: 600;
+  color: #6b4c1a;
+  position: absolute;
+  bottom: 3px;
+  right: 4px;
+}

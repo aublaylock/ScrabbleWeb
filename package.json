@@ -1,0 +1,19 @@
+{
+  "name": "scrabble-web",
+  "private": true,
+  "workspaces": [
+    "packages/common",
+    "packages/game",
+    "packages/server",
+    "packages/client"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev --workspace=packages/server",
+    "dev:client": "npm run dev --workspace=packages/client",
+    "build": "npm run build --workspaces",
+    "install:all": "npm install"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
