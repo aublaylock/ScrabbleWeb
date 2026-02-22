@@ -22,6 +22,16 @@ async function main() {
       : true,
   });
 
+  // Health-check endpoint — used by uptime monitors to prevent free-tier spin-down.
+  server.app.use(async (ctx: { path: string; status: number; body: string }, next: () => Promise<void>) => {
+    if (ctx.path === '/health') {
+      ctx.status = 200;
+      ctx.body = 'OK';
+      return;
+    }
+    await next();
+  });
+
   server.run(PORT, () => {
     console.log(`Scrabble server running on http://localhost:${PORT}`);
   });
