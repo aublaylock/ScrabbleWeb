@@ -7,7 +7,7 @@ import { ActionBar } from './ActionBar';
 import { ScorePanel } from './ScorePanel';
 import { GameLog } from './GameLog';
 import { useTilePlacement } from '../../hooks/useTilePlacement';
-import { validatePlacement, validateWords, computeScore, setDictionary } from '@scrabble/game';
+import { validatePlacement, extractWords, validateWords, computeScore, setDictionary } from '@scrabble/game';
 import type { Board as BoardGrid } from '@scrabble/common';
 
 interface EndGameResult {
@@ -78,12 +78,17 @@ export function GamePage({ G, ctx, moves, playerID, isActive, matchID, matchData
     const geoError = validatePlacement(G.board, placements);
     if (geoError) return { valid: false, message: geoError };
 
+    // Dictionary not ready yet — extract words for structural check only.
+    if (!dictLoaded) {
+      const words = extractWords(G.board, placements);
+      if (words.length === 0) return { valid: false, message: 'No complete word formed' };
+      return { valid: false, message: 'Checking words…' };
+    }
+
+    // Dictionary loaded — full word validation.
     const { words, error: wordError } = validateWords(G.board, placements);
     if (wordError) return { valid: false, message: wordError };
     if (words.length === 0) return { valid: false, message: 'No complete word formed' };
-
-    // Only show a score if the dictionary has loaded and confirmed all words are valid.
-    if (!dictLoaded) return { valid: false, message: 'Checking words…' };
 
     const tempBoard = G.board.map((row) => [...row]) as BoardGrid;
     for (const { tile, coord } of placements) {
