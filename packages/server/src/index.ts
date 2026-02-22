@@ -16,10 +16,13 @@ async function main() {
 
   const server = Server({
     games: [ScrabbleGame],
-    // Allow all origins in development; set CLIENT_ORIGIN in production.
+    // Socket.IO origins — restrict to client in production.
     origins: process.env.CLIENT_ORIGIN
       ? [process.env.CLIENT_ORIGIN]
       : true,
+    // Lobby REST API origins — allow all so CORS never blocks create/join requests.
+    // The lobby API only creates/lists matches; it holds no sensitive user data.
+    apiOrigins: true,
   });
 
   // Health-check endpoint — used by uptime monitors to prevent free-tier spin-down.
