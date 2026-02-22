@@ -7,9 +7,13 @@
     "jsx": "react-jsx",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "outDir": "dist",
-    "rootDir": "src",
     "noEmit": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "@scrabble/common": ["../common/src/index.ts"],
+      "@scrabble/game": ["../game/src/index.ts"]
+    }
   },
   "include": ["src"]
 }
