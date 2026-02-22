@@ -33,6 +33,11 @@
   background: #ddd0b8;
 }
 
+/* Last move highlight */
+.cell-last-move .tile-committed {
+  box-shadow: 0 0 0 2px #f9ca24, 1px 1px 0 #a07840, inset 0 1px 0 rgba(255,255,255,.5);
+}
+
 /* Drag-over highlight */
 .cell-drag-over {
   background: #e8d8a0 !important;

@@ -6,9 +6,10 @@ interface Props {
   currentPlayer: string;
   myPlayerID: string;
   playOrder: string[];
+  playerName: (pid: string) => string;
 }
 
-export function ScorePanel({ players, currentPlayer, myPlayerID, playOrder }: Props) {
+export function ScorePanel({ players, currentPlayer, myPlayerID, playOrder, playerName }: Props) {
   return (
     <div className="score-panel">
       <h3>Scores</h3>
@@ -30,7 +31,7 @@ export function ScorePanel({ players, currentPlayer, myPlayerID, playOrder }: Pr
             >
               <span className="score-name">
                 {isCurrentTurn && <span className="turn-arrow">▶ </span>}
-                Player {parseInt(pid) + 1}
+                {playerName(pid)}
                 {isMe ? ' (You)' : ''}
               </span>
               <span className="score-value">{p?.score ?? 0}</span>

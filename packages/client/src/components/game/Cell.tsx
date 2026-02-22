@@ -25,6 +25,8 @@ interface Props {
   premium: PremiumType;
   /** Show click-target cursor (a rack tile is selected and this cell is empty). */
   isTarget: boolean;
+  /** Highlight this cell as part of the most recently committed move. */
+  isLastMove: boolean;
   onClick: () => void;
   /** Called when something is dropped onto this empty cell. */
   onDrop: (e: React.DragEvent<HTMLDivElement>) => void;
@@ -39,6 +41,7 @@ export function Cell({
   pendingTile,
   premium,
   isTarget,
+  isLastMove,
   onClick,
   onDrop,
   onPendingDragStart,
@@ -71,6 +74,7 @@ export function Cell({
         !isEmpty ? 'cell-filled' : '',
         isPending ? 'cell-pending tile-draggable' : '',
         isTarget ? 'cell-target' : '',
+        isLastMove ? 'cell-last-move' : '',
         dragOver ? 'cell-drag-over' : '',
       ]
         .filter(Boolean)

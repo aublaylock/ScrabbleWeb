@@ -4,9 +4,10 @@ import type { MoveLogEntry } from '@scrabble/common';
 interface Props {
   entries: MoveLogEntry[];
   playerID: string;
+  playerName: (pid: string) => string;
 }
 
-export function GameLog({ entries, playerID }: Props) {
+export function GameLog({ entries, playerID, playerName }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export function GameLog({ entries, playerID }: Props) {
       <ul className="log-list">
         {entries.map((entry, i) => {
           const isMe = entry.playerID === playerID;
-          const name = `P${parseInt(entry.playerID) + 1}${isMe ? ' (You)' : ''}`;
+          const name = `${playerName(entry.playerID)}${isMe ? ' (You)' : ''}`;
 
           let text = '';
           if (entry.type === 'place') {

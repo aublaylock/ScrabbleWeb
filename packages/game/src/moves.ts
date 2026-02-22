@@ -41,6 +41,7 @@ export function placeTiles(
   G.bag = newBag;
 
   G.consecutivePasses = 0;
+  G.lastMoveCoords = placements.map((p) => ({ row: p.coord.row, col: p.coord.col }));
   G.moveLog.push({
     playerID: pid,
     type: 'place',

@@ -107,7 +107,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0;
-  overflow-y: auto;
+  overflow: hidden;
   padding: 12px;
 }
 
@@ -148,7 +148,6 @@ body {
   color: var(--text-muted);
   text-align: center;
   padding: 8px;
-  margin-top: auto;
   cursor: help;
   user-select: none;
 }
@@ -244,10 +243,10 @@ body {
 .rack-count { font-size: .7rem; color: var(--text-muted); }
 
 /* ── Game log ─────────────────────────────────────────────── */
-.game-log { margin-top: 12px; }
+.game-log { margin-top: 12px; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
 .game-log h3 { font-size: .75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
 .log-empty { font-size: .8rem; color: var(--text-muted); }
-.log-list { list-style: none; display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
+.log-list { list-style: none; display: flex; flex-direction: column; gap: 4px; flex: 1; overflow-y: auto; }
 .log-entry { font-size: .78rem; color: var(--text-muted); padding: 2px 0; }
 .log-entry.log-me { color: var(--text); }
 

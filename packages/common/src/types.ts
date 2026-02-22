@@ -37,6 +37,7 @@ export interface ScrabbleG {
   myRack: Tile[];        // populated by playerView; empty array on server
   consecutivePasses: number;
   moveLog: MoveLogEntry[];
+  lastMoveCoords?: Coord[]; // coords of the most recently placed tiles (for highlight)
 }
 
 export type PremiumType = 'DL' | 'TL' | 'DW' | 'TW' | 'star' | null;

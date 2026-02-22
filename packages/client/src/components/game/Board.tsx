@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Board as BoardType, PlacedTile, Tile } from '@scrabble/common';
+import type { Board as BoardType, Coord, PlacedTile, Tile } from '@scrabble/common';
 import { getPremium } from '@scrabble/common';
 import { Cell } from './Cell';
 
@@ -7,6 +7,7 @@ interface Props {
   board: BoardType;
   pendingPlacements: PlacedTile[];
   selectedTile: Tile | null;
+  lastMoveCoords: Coord[];
   onCellClick: (row: number, col: number) => void;
   onCellDrop: (e: React.DragEvent<HTMLDivElement>, row: number, col: number) => void;
   onPendingDragStart: (e: React.DragEvent<HTMLDivElement>, row: number, col: number) => void;
@@ -16,6 +17,7 @@ export function Board({
   board,
   pendingPlacements,
   selectedTile,
+  lastMoveCoords,
   onCellClick,
   onCellDrop,
   onPendingDragStart,
@@ -23,6 +25,7 @@ export function Board({
   const pendingMap = new Map(
     pendingPlacements.map((p) => [`${p.coord.row},${p.coord.col}`, p.tile]),
   );
+  const lastMoveSet = new Set(lastMoveCoords.map((c) => `${c.row},${c.col}`));
 
   return (
     <div className="board">
@@ -41,8 +44,8 @@ export function Board({
               committedTile={committed}
               pendingTile={pending}
               premium={premium}
-              // Show click-target cursor whenever a tile is selected and cell is free
               isTarget={!committed && !pending && !!selectedTile}
+              isLastMove={lastMoveSet.has(key)}
               onClick={() => onCellClick(row, col)}
               onDrop={(e) => onCellDrop(e, row, col)}
               onPendingDragStart={onPendingDragStart}

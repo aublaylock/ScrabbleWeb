@@ -7,7 +7,7 @@ import { ActionBar } from './ActionBar';
 import { ScorePanel } from './ScorePanel';
 import { GameLog } from './GameLog';
 import { useTilePlacement } from '../../hooks/useTilePlacement';
-import { validatePlacement, extractWords, computeScore } from '@scrabble/game';
+import { validatePlacement, validateWords, computeScore, setDictionary } from '@scrabble/game';
 import type { Board as BoardGrid } from '@scrabble/common';
 
 interface EndGameResult {
@@ -26,14 +26,31 @@ interface DragPayload {
 
 export type GamePageProps = BoardProps<ScrabbleG>;
 
-export function GamePage({ G, ctx, moves, playerID, isActive, matchID }: GamePageProps) {
+export function GamePage({ G, ctx, moves, playerID, isActive, matchID, matchData }: GamePageProps) {
+  const playerName = (pid: string): string =>
+    matchData?.find((p) => String(p.id) === pid)?.name ?? `Player ${parseInt(pid) + 1}`;
   const placement = useTilePlacement();
   const [blankPending, setBlankPending] = useState<{ tile: Tile; coord: Coord } | null>(null);
   const [error, setError] = useState('');
   const [showBag, setShowBag] = useState(false);
+  const [dictLoaded, setDictLoaded] = useState(false);
 
   const myRack = G.myRack ?? [];
   const isMyTurn = isActive && !ctx.gameover;
+
+  // Load the word list once so client-side preview can validate words.
+  useEffect(() => {
+    fetch('/dictionary.txt')
+      .then((r) => r.text())
+      .then((text) => {
+        const words = new Set(
+          text.split('\n').map((w) => w.trim().toUpperCase()).filter(Boolean),
+        );
+        setDictionary(words);
+        setDictLoaded(true);
+      })
+      .catch(() => { /* dictionary unavailable; score preview still works */ });
+  }, []);
 
   // When the board updates (opponent played), remove any staged tiles that now conflict.
   useEffect(() => {
@@ -61,8 +78,12 @@ export function GamePage({ G, ctx, moves, playerID, isActive, matchID }: GamePag
     const geoError = validatePlacement(G.board, placements);
     if (geoError) return { valid: false, message: geoError };
 
-    const words = extractWords(G.board, placements);
+    const { words, error: wordError } = validateWords(G.board, placements);
+    if (wordError) return { valid: false, message: wordError };
     if (words.length === 0) return { valid: false, message: 'No complete word formed' };
+
+    // Only show a score if the dictionary has loaded and confirmed all words are valid.
+    if (!dictLoaded) return { valid: false, message: 'Checking words…' };
 
     const tempBoard = G.board.map((row) => [...row]) as BoardGrid;
     for (const { tile, coord } of placements) {
@@ -74,7 +95,7 @@ export function GamePage({ G, ctx, moves, playerID, isActive, matchID }: GamePag
       valid: true,
       message: isBingo ? `BINGO! +50 bonus — ${score} pts` : `${score} pts`,
     };
-  }, [G.board, placement.pendingPlacements]);
+  }, [G.board, placement.pendingPlacements, dictLoaded]);
 
   // ── Helpers ──────────────────────────────────────────────
 
@@ -219,7 +240,7 @@ export function GamePage({ G, ctx, moves, playerID, isActive, matchID }: GamePag
             .sort(([, a], [, b]) => b - a)
             .map(([pid, score]) => (
               <li key={pid} className={pid === winner ? 'winner' : ''}>
-                Player {parseInt(pid) + 1}
+                {playerName(pid)}
                 {pid === winner ? ' 🏆' : ''}: {score}
               </li>
             ))}
@@ -242,8 +263,9 @@ export function GamePage({ G, ctx, moves, playerID, isActive, matchID }: GamePag
           currentPlayer={ctx.currentPlayer}
           myPlayerID={playerID ?? ''}
           playOrder={ctx.playOrder}
+          playerName={playerName}
         />
-        <GameLog entries={G.moveLog} playerID={playerID ?? ''} />
+        <GameLog entries={G.moveLog} playerID={playerID ?? ''} playerName={playerName} />
         <div
           className="bag-count"
           onMouseEnter={() => setShowBag(true)}
@@ -265,7 +287,7 @@ export function GamePage({ G, ctx, moves, playerID, isActive, matchID }: GamePag
           <div className="turn-banner your-turn">Your turn</div>
         ) : (
           <div className="turn-banner">
-            Player {parseInt(ctx.currentPlayer) + 1}'s turn
+            {playerName(ctx.currentPlayer)}'s turn
           </div>
         )}
 
@@ -273,6 +295,7 @@ export function GamePage({ G, ctx, moves, playerID, isActive, matchID }: GamePag
           board={G.board}
           pendingPlacements={placement.pendingPlacements}
           selectedTile={placement.selectedRackTile}
+          lastMoveCoords={G.lastMoveCoords ?? []}
           onCellClick={handleCellClick}
           onCellDrop={handleCellDrop}
           onPendingDragStart={handlePendingDragStart}
