@@ -44,7 +44,9 @@ export function GamePage({ G, ctx, moves, playerID, isActive, matchID, matchData
       .then((r) => r.text())
       .then((text) => {
         const words = new Set(
-          text.split('\n').map((w) => w.trim().toUpperCase()).filter(Boolean),
+          text.split('\n')
+            .map((line) => line.trim().split(/\s/)[0].toUpperCase())
+            .filter((w) => /^[A-Z]+$/.test(w)),
         );
         setDictionary(words);
         setDictLoaded(true);
