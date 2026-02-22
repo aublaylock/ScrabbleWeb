@@ -10,7 +10,7 @@
   "scripts": {
     "dev:server": "npm run dev --workspace=packages/server",
     "dev:client": "npm run dev --workspace=packages/client",
-    "build": "npm run build --workspaces",
+    "build": "npm run build --workspace=packages/common && npm run build --workspace=packages/game && npm run build --workspace=packages/server",
     "install:all": "npm install"
   },
   "devDependencies": {
