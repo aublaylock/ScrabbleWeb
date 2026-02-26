@@ -229,33 +229,6 @@ export function GamePage({ G, ctx, moves, playerID, isActive, matchID, matchData
     placement.clearAll();
   };
 
-  // ── Game over screen ──────────────────────────────────────
-
-  if (ctx.gameover) {
-    const { winner, scores, reason } = ctx.gameover as EndGameResult;
-    return (
-      <div className="gameover">
-        <h1>Game Over</h1>
-        <p className="gameover-reason">
-          {reason === 'playerOut'
-            ? 'A player used all their tiles!'
-            : 'All players passed — game ended.'}
-        </p>
-        <h2>Final Scores</h2>
-        <ul className="gameover-scores">
-          {Object.entries(scores)
-            .sort(([, a], [, b]) => b - a)
-            .map(([pid, score]) => (
-              <li key={pid} className={pid === winner ? 'winner' : ''}>
-                {playerName(pid)}
-                {pid === winner ? ' 🏆' : ''}: {score}
-              </li>
-            ))}
-        </ul>
-      </div>
-    );
-  }
-
   // ── Main game UI ──────────────────────────────────────────
 
   return (
@@ -364,6 +337,34 @@ export function GamePage({ G, ctx, moves, playerID, isActive, matchID, matchData
             </div>
           </div>
         )}
+
+        {/* Game over overlay */}
+        {ctx.gameover && (() => {
+          const { winner, scores, reason } = ctx.gameover as EndGameResult;
+          return (
+            <div className="gameover-overlay">
+              <div className="gameover">
+                <h1>Game Over</h1>
+                <p className="gameover-reason">
+                  {reason === 'playerOut'
+                    ? 'A player used all their tiles!'
+                    : 'All players passed — game ended.'}
+                </p>
+                <h2>Final Scores</h2>
+                <ul className="gameover-scores">
+                  {Object.entries(scores)
+                    .sort(([, a], [, b]) => b - a)
+                    .map(([pid, score]) => (
+                      <li key={pid} className={pid === winner ? 'winner' : ''}>
+                        {playerName(pid)}
+                        {pid === winner ? ' 🏆' : ''}: {score}
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            </div>
+          );
+        })()}
       </main>
     </div>
   );
